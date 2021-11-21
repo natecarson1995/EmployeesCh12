@@ -20,5 +20,7 @@ namespace EmployeesCh12.Models
 
         [DataType(DataType.PostalCode)]
         public string Zipcode { get; set; }
+
+        public ICollection<DepartmentLocation> DepartmentLocations { get; set; }
     }
 }
