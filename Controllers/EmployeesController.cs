@@ -20,12 +20,17 @@ namespace EmployeesCh12.Controllers
         }
 
         // GET: Employees
-        public IActionResult Index(string sortOrder)
+        public IActionResult Index(string sortOrder, string searchString)
         {
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["DateSortParm"] = sortOrder=="Date" ? "date_desc" : "Date";
 
             var employees = from e in _context.Employees.Include(e => e.Department).Include(e=>e.Benefits) select e;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                employees = employees.Where(s => s.LastName.Contains(searchString) || s.FirstName.Contains(searchString));
+            }
             switch (sortOrder)
             {
                 case "name_desc":
