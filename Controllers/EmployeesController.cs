@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EmployeesCh12.Data;
 using EmployeesCh12.Models;
+using EmployeesCh12.ViewModels;
 
 namespace EmployeesCh12.Controllers
 {
@@ -189,6 +190,18 @@ namespace EmployeesCh12.Controllers
         private bool EmployeeExists(int id)
         {
             return _context.Employees.Any(e => e.ID == id);
+        }
+        public IActionResult DeptCount()
+        {
+            IQueryable<DepartmentGroup> data =
+                 from employee in _context.Employees.Include(e => e.Department)
+                 group employee by employee.DepartmentID into deptGroup
+                 select new DepartmentGroup()
+                 {
+                     DepartmentID = deptGroup.Key,
+                     DepartmentCount = deptGroup.Count()
+                 };
+            return View(data.ToList());
         }
     }
 }
