@@ -20,10 +20,28 @@ namespace EmployeesCh12.Controllers
         }
 
         // GET: Employees
-        public async Task<IActionResult> Index()
+        public IActionResult Index(string sortOrder)
         {
-            var employeeContext = _context.Employees.Include(e => e.Department);
-            return View(await employeeContext.ToListAsync());
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder=="Date" ? "date_desc" : "Date";
+
+            var employees = from e in _context.Employees.Include(e => e.Department).Include(e=>e.Benefits) select e;
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    employees = employees.OrderByDescending(s => s.LastName);
+                    break;
+                case "Date":
+                    employees = employees.OrderBy(s => s.HireDate);
+                    break;
+                case "date_desc":
+                    employees = employees.OrderByDescending(s => s.HireDate);
+                    break;
+                default:
+                    employees = employees.OrderBy(s => s.LastName);
+                    break;
+            }
+            return View(employees);
         }
 
         // GET: Employees/Details/5
